@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Ordem do menu lateral · Sistema Escolar{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('staff.dashboard') }}">&larr; Início</a>
+<h1>Ordem do menu lateral</h1>
+<p class="muted">Muda a ordem dos ícones da barra lateral pra todo mundo que usa o sistema — não é uma
+  preferência pessoal. "Início" pode ser movido também, se preferir outro item no topo.</p>
+
+<section class="panel">
+  <ul class="lista-ordenavel">
+    {% for id, rotulo in itens %}
+    <li class="item-ordenavel">
+      <span class="item-ordenavel-nome">{{ rotulo }}</span>
+      <div class="item-ordenavel-botoes">
+        <form method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="item" value="{{ id }}">
+          <input type="hidden" name="direcao" value="subir">
+          <button type="submit" class="button-outline" {% if loop.first %}disabled{% endif %} aria-label="Mover {{ rotulo }} para cima">↑</button>
+        </form>
+        <form method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="item" value="{{ id }}">
+          <input type="hidden" name="direcao" value="descer">
+          <button type="submit" class="button-outline" {% if loop.last %}disabled{% endif %} aria-label="Mover {{ rotulo }} para baixo">↓</button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

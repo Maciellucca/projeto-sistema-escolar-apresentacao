@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Enviar fotos em lote · Sistema Escolar{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('importacao.alunos_index') }}">&larr; Importar alunos</a>
+<h1>Enviar fotos em lote</h1>
+<p class="muted">Envie várias fotos de uma vez — o sistema casa cada arquivo com o aluno certo pelo
+  <strong>nome do arquivo</strong>. Nomeie cada foto igual ao nome completo do aluno (o sistema ignora
+  maiúsculas/minúsculas, acentos e troca "_"/"-" por espaço), por exemplo:</p>
+<p class="muted small" style="font-family:monospace;">ALICE COSTA SILVA.jpg &nbsp;ou&nbsp; alice_costa_silva.jpg &nbsp;ou&nbsp; Alice-Costa-Silva.png</p>
+
+<section class="panel">
+  <form method="post" action="{{ url_for('importacao.fotos_upload') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid">
+      <label>Turma (opcional — filtra a busca e evita nome duplicado entre turmas)
+        <select name="turma">
+          <option value="">Todas as turmas</option>
+          {% for t in turmas %}
+          <option value="{{ t['turma'] }}">{{ t['turma'] }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <label style="margin-top:14px;">Fotos (.jpg, .png ou .webp — pode selecionar várias de uma vez)
+      <input type="file" name="fotos" accept=".jpg,.jpeg,.png,.webp" multiple required>
+    </label>
+    <button type="submit" class="button-grande" style="margin-top:20px;">Enviar e casar com os alunos</button>
+  </form>
+</section>
+{% endblock %}

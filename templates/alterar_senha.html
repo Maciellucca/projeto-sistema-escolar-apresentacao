@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Alterar senha · Sistema Escolar{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('staff.dashboard') }}">&larr; Início</a>
+<div class="auth-card">
+  <h1>Alterar senha</h1>
+  <p class="muted">Sua senha atual é necessária para confirmar a troca.</p>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Senha atual
+      <input type="password" name="senha_atual" autocomplete="current-password" required autofocus>
+    </label>
+    <label>Nova senha
+      <input type="password" name="nova_senha" autocomplete="new-password" minlength="8" required>
+    </label>
+    <label>Confirmar nova senha
+      <input type="password" name="nova_senha2" autocomplete="new-password" minlength="8" required>
+    </label>
+    <button type="submit">Salvar nova senha</button>
+  </form>
+</div>
+{% endblock %}

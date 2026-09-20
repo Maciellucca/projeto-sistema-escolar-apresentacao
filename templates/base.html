@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Sistema Escolar{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  {% if user %}
+  <div class="shell">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="sidebar-logo" href="{{ url_for('staff.dashboard') }}" aria-label="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
+      </a>
+      <nav class="sidebar-nav">
+        {% for item in ordem_sidebar %}
+        {% if item == 'inicio' %}
+        <a href="{{ url_for('staff.dashboard') }}" class="sidebar-icon {% if request.endpoint == 'staff.dashboard' %}ativo{% endif %}" title="Início" aria-label="Início">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg>
+          <span class="sidebar-label">Início</span>
+        </a>
+        {% elif item == 'importar_notas' and user['papel'] in ('admin', 'secretaria') %}
+        <a href="{{ url_for('importacao.notas_index') }}" class="sidebar-icon {% if request.endpoint in ('importacao.notas_index','importacao.notas_upload','importacao.revisar','importacao.confirmar','importacao.descartar') %}ativo{% endif %}" title="Importar notas" aria-label="Importar notas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11m0-11 4 4m-4-4-4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          <span class="sidebar-label">Importar notas</span>
+        </a>
+        {% elif item == 'importar_alunos' and user['papel'] in ('admin', 'secretaria') %}
+        <a href="{{ url_for('importacao.alunos_index') }}" class="sidebar-icon {% if 'alunos' in (request.endpoint or '') and 'sptrans' not in (request.endpoint or '') %}ativo{% endif %}" title="Importar alunos" aria-label="Importar alunos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+          <span class="sidebar-label">Importar alunos</span>
+        </a>
+        {% elif item == 'arquivo_morto' and user['papel'] in ('admin', 'secretaria') %}
+        <a href="{{ url_for('arquivo_morto.index') }}" class="sidebar-icon {% if (request.endpoint or '').startswith('arquivo_morto.') %}ativo{% endif %}" title="Arquivo Morto" aria-label="Arquivo Morto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M10 13h4"/></svg>
+          <span class="sidebar-label">Arquivo Morto</span>
+        </a>
+        {% endif %}
+        {% endfor %}
+      </nav>
+      <a href="{{ url_for('staff.logout') }}" class="sidebar-icon sidebar-sair" title="Sair" aria-label="Sair">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        <span class="sidebar-label">Sair</span>
+      </a>
+    </aside>
+
+    <div class="area-principal">
+      <header class="topbar">
+        <div class="conta-wrap">
+          <button type="button" class="conta-botao" id="botao-conta" aria-haspopup="true" aria-expanded="false">
+            <span class="avatar">{{ user['nome'][0] }}</span>
+            <span class="conta-texto">
+              <strong>{{ user['nome'] }}</strong>
+              <small>{{ user['setor'] or user['papel'] }}</small>
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="conta-menu" id="menu-conta" hidden>
+            <span class="conta-menu-titulo">Minha conta</span>
+            <a href="{{ url_for('staff.alterar_senha') }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              Alterar senha
+            </a>
+            {% if user['papel'] == 'admin' %}
+            <a href="{{ url_for('staff.ordenar_sidebar') }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 7 5 4 2 7M5 4v16"/><path d="M16 17l3 3 3-3M19 20V4"/></svg>
+              Ordem do menu lateral
+            </a>
+            {% endif %}
+            <a href="{{ url_for('staff.logout') }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+              Sair
+            </a>
+          </div>
+        </div>
+        <span class="topbar-marca">Sistema Escolar</span>
+      </header>
+
+      {% block hero %}{% endblock %}
+
+      <main class="container {% block container_class %}{% endblock %}" id="conteudo">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack" role="status" aria-live="polite">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="footer">Ano letivo {{ ano_letivo }} · Sistema Escolar</footer>
+    </div>
+  </div>
+  {% else %}
+  <main class="container-solo" id="conteudo">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" role="status" aria-live="polite">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {{ self.content() }}
+  </main>
+  <footer class="footer">Ano letivo {{ ano_letivo }} · Sistema Escolar</footer>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/easter_egg.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

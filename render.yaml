@@ -1,0 +1,23 @@
+# Deploy no Render.com — veja o passo a passo completo em INICIO_RAPIDO.md
+services:
+  - type: web
+    name: projeto-sistema-escolar
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT --timeout 300
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_SETUP_KEY
+        generateValue: true
+      - key: ESCOLA_FORCE_HTTPS
+        value: "1"
+      - key: ESCOLA_DATA_DIR
+        value: /var/data
+      - key: ESCOLA_ANO_LETIVO
+        value: "2026"
+    disk:
+      name: projeto-dados
+      mountPath: /var/data
+      sizeGB: 1

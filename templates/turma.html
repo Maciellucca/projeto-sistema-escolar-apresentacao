@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Turma {{ turma }} · Sistema Escolar{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('staff.dashboard') }}">&larr; Turmas</a>
+<h1>Turma {{ turma }}</h1>
+
+{% if turma == 'TEG-PROV' %}
+<section class="panel panel-aee">
+  <h2>Turma provisória — corrija um por um</h2>
+  <p class="muted small">Esses alunos foram criados automaticamente pela importação do TEG, que não traz
+    a turma específica (só a série). Preencha a turma certa de cada um — assim que todos saírem daqui, essa
+    seção some sozinha do painel principal.</p>
+  <div style="overflow-x:auto;">
+    <table class="tabela-notas">
+      <thead><tr><th scope="col">Aluno</th><th scope="col">Série</th><th scope="col">Nova turma</th><th scope="col"></th></tr></thead>
+      <tbody>
+        {% for a in alunos %}
+        <tr>
+          <td><a href="{{ url_for('staff.aluno_detail', student_id=a['id']) }}">{{ a['nome_social'] or a['nome'] }}</a></td>
+          <td>{{ a['serie'] or '—' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('staff.editar_turma', student_id=a['id']) }}" style="display:flex; gap:8px; margin:0;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="serie" value="{{ a['serie'] or '' }}">
+              <input type="hidden" name="next" value="turma_atual">
+              <input type="text" name="turma" placeholder="Ex: 7A" required style="width:110px;">
+              <button type="submit" class="button-outline" style="padding:6px 12px; font-size:.85rem;">Corrigir</button>
+            </form>
+          </td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+
+<div class="busca-wrap">
+  <label for="busca-aluno" class="sr-only">Buscar aluno pelo nome</label>
+  <input type="search" id="busca-aluno" placeholder="Buscar aluno pelo nome…"
+         autocomplete="off" data-turma="{{ turma }}">
+  <p id="busca-status" class="muted small" role="status" aria-live="polite"></p>
+</div>
+
+<div class="grid-cards" id="lista-alunos">
+  {% for a in alunos %}
+  <a class="card aluno-card {% if a['situacao'] != 'ATIVO' %}inativo{% endif %}" href="{{ url_for('staff.aluno_detail', student_id=a['id']) }}">
+    <div class="foto-wrap">
+      {% if a['foto_path'] %}
+        <img src="{{ url_for('staff.foto', filename=a['foto_path']) }}" alt="Foto de {{ a['nome_social'] or a['nome'] }}">
+      {% else %}
+        <div class="foto-placeholder" role="img" aria-label="Sem foto cadastrada">{{ (a['nome_social'] or a['nome'])[0] }}</div>
+      {% endif %}
+    </div>
+    <div class="aluno-nome">{{ a['nome_social'] or a['nome'] }}</div>
+    {% if a['aee'] %}<span class="badge badge-aee" title="Aluno público-alvo da Educação Especial (AEE)">AEE</span>{% endif %}
+    {% if a['situacao'] != 'ATIVO' %}<span class="badge badge-muted">{{ a['situacao'] }}</span>{% endif %}
+  </a>
+  {% endfor %}
+</div>
+
+<section class="panel" id="painel-estatisticas">
+  <h2>Estatísticas da turma</h2>
+  <div id="estatisticas-corpo" class="muted">Carregando estatísticas…</div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if turma != 'TEG-PROV' %}
+<script src="{{ url_for('static', filename='js/turma.js') }}" defer></script>
+{% endif %}
+{% endblock %}

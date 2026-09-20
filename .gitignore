@@ -1,0 +1,31 @@
+# ---------------------------------------------------------------------------
+# NUNCA remova as linhas de data/raw/, data/exemplo/ e instance/ abaixo.
+# data/raw/ e instance/ guardam dados pessoais REAIS de crianças (nomes,
+# datas de nascimento, RA/INEP, laudos de saúde/AEE) e NÃO podem ir para o
+# GitHub, nem em repositório privado. Veja docs/LGPD_PRIVACIDADE.md
+#
+# data/exemplo/ não tem dado real (era só a base fictícia de demonstração),
+# mas fica de fora do Git por escolha do projeto — quem clonar monta a
+# própria base de teste (veja INICIO_RAPIDO.md).
+# ---------------------------------------------------------------------------
+data/raw/*
+!data/raw/.gitkeep
+data/exemplo/
+instance/
+static/photos/*
+!static/photos/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Ambiente
+.env
+
+# SO / editor
+.DS_Store
+.vscode/
+*.swp
